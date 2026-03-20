@@ -6,7 +6,7 @@ const connect = async () => {
   const mongoUri =
     process.env.MONGODB_URI ||
     process.env.MONGO_URI ||
-    'mongodb://localhost:27017/radheKrishna';
+    'mongodb+srv://shivamvaghela2007_db_user:shivlo%40123@cluster0.sroemva.mongodb.net/';
 
   try {
     if (mongoose.connection.readyState === 1) {
