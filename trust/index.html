@@ -1,0 +1,1306 @@
+﻿<!doctype html>
+<html lang="gu" class="h-full">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>રાધાકૃષ્ણ જનહિતકારી ટ્રસ્ટ</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: -200% 0;
+      }
+
+      100% {
+        background-position: 200% 0;
+      }
+    }
+
+    @keyframes peacockFeather {
+
+      0%,
+      100% {
+        transform: rotate(-5deg);
+      }
+
+      50% {
+        transform: rotate(5deg);
+      }
+    }
+
+    .float-animation {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .shimmer-text {
+      background: linear-gradient(90deg, #fbbf24, #f59e0b, #fbbf24, #f59e0b);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 3s linear infinite;
+    }
+
+    .peacock-animation {
+      animation: peacockFeather 4s ease-in-out infinite;
+    }
+
+    .devotional-gradient {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    }
+
+    .golden-border {
+      border: 2px solid transparent;
+      background: linear-gradient(#1a1a2e, #1a1a2e) padding-box,
+        linear-gradient(135deg, #fbbf24, #f59e0b, #d97706) border-box;
+    }
+
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+
+    .card-hover:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(251, 191, 36, 0.2);
+    }
+
+    .nav-link {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #fbbf24, #f59e0b);
+      transition: all 0.3s ease;
+      transform: translateX(-50%);
+    }
+
+    .nav-link:hover::after,
+    .nav-link.active::after {
+      width: 100%;
+    }
+
+    .receipt-template {
+      background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%);
+      border: 3px double #d97706;
+    }
+
+    .unpaid-member {
+      background: linear-gradient(135deg, #fecaca, #fee2e2) !important;
+      border-left: 4px solid #dc2626 !important;
+    }
+
+    .paid-member {
+      background: linear-gradient(135deg, #d1fae5, #ecfdf5) !important;
+      border-left: 4px solid #10b981 !important;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+
+    .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+
+<body class="h-full devotional-gradient text-white overflow-auto scrollbar-hide"
+  style="font-family: 'Poppins', sans-serif;">
+  <div id="app" class="w-full min-h-full">
+    <nav
+      class="sticky top-0 z-50 bg-gradient-to-r from-amber-900/90 via-amber-800/90 to-amber-900/90 backdrop-blur-md border-b border-amber-500/30">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex items-center gap-3"><span class="text-3xl peacock-animation">🦚</span>
+            <div class="hidden sm:block">
+              <h1 id="nav-trust-name" class="text-lg font-bold shimmer-text">રાધાકૃષ્ણ જનહિતકારી ટ્રસ્ટ</h1>
+            </div>
+          </div>
+          <div class="flex items-center gap-1 sm:gap-2"><button onclick="showPage('home')"
+              class="nav-link active px-2 sm:px-4 py-2 text-amber-100 hover:text-white text-sm sm:text-base"
+              data-page="home">🏠 હોમ</button> <button onclick="showPage('about')"
+              class="nav-link px-2 sm:px-4 py-2 text-amber-100 hover:text-white text-sm sm:text-base"
+              data-page="about">ℹ️ અમારા વિશે</button> <button onclick="showPage('members')"
+              class="nav-link px-2 sm:px-4 py-2 text-amber-100 hover:text-white text-sm sm:text-base"
+              data-page="members">👥 સભ્યો</button> <button onclick="showPage('admin')"
+              class="nav-link px-2 sm:px-4 py-2 text-amber-100 hover:text-white text-sm sm:text-base"
+              data-page="admin">⚙️ એડમિન</button>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <div id="page-home" class="page-content">
+      <div class="relative overflow-hidden py-12 sm:py-20">
+        <div class="absolute inset-0 opacity-10">
+          <div class="absolute top-10 left-10 text-8xl peacock-animation">
+            🦚
+          </div>
+          <div class="absolute top-20 right-20 text-6xl float-animation" style="animation-delay: 0.5s;">
+            🪷
+          </div>
+          <div class="absolute bottom-10 left-1/4 text-7xl float-animation" style="animation-delay: 1s;">
+            🐄
+          </div>
+          <div class="absolute bottom-20 right-1/3 text-5xl peacock-animation" style="animation-delay: 1.5s;">
+            🦚
+          </div>
+        </div>
+        <div class="relative max-w-4xl mx-auto text-center px-4">
+          <div class="mb-6"><span class="text-6xl sm:text-8xl float-animation inline-block">🙏</span>
+          </div>
+          <h1 id="hero-trust-name" class="text-3xl sm:text-5xl font-bold mb-4 shimmer-text">રાધાકૃષ્ણ જનહિતકારી ટ્રસ્ટ
+          </h1>
+          <p class="text-lg text-amber-200/80 max-w-2xl mx-auto">સાથ ,સહકાર અને સંગઠન</p>
+        </div>
+      </div>
+      <div class="max-w-5xl mx-auto px-8 py-18">
+        <h2 class="text-5xl font-bold text-center text-amber-300 mb-12">
+        <span class="block text-4xl mb-2">અમારા કાર્યો</span>
+      
+      </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="golden-border rounded-2xl p-6 card-hover bg-gradient-to-br from-slate-800/80 to-slate-900/80 flex flex-col items-center">
+            <div class="text-5xl mb-4">
+              🐄
+            </div>
+            <h3 class="text-xl font-bold text-amber-300 mb-3">મૂંગા પશુ-પક્ષી સેવા</h3>
+            <p class="text-amber-100/70 text-sm text-center">ગાયોની સેવા, ઘાસચારો, દવા-સારવાર અને ગૌશાળા સંચાલન</p>
+          </div>
+          <div class="golden-border rounded-2xl p-6 card-hover bg-gradient-to-br from-slate-800/80 to-slate-900/80 flex flex-col items-center">
+            <div class="text-5xl mb-4">
+              🎵
+            </div>
+            <h3 class="text-xl font-bold text-amber-300 mb-3">ધુન મંડળ</h3>
+            <p class="text-amber-100/70 text-sm text-center">ભજન-કીર્તન, ધાર્મિક કાર્યક્રમો અને સાંસ્કૃતિક ઉજવણી</p>
+          </div>
+          <div class="golden-border rounded-2xl p-6 card-hover bg-gradient-to-br from-slate-800/80 to-slate-900/80 flex flex-col items-center">
+            <div class="text-5xl mb-4">
+              ❤️
+            </div>
+            <h3 class="text-xl font-bold text-amber-300 mb-3">સમાજ સેવા</h3>
+            <p class="text-amber-100/70 text-sm text-center">જરૂરિયાતમંદોને મદદ, શિક્ષણ સહાય અને આરોગ્ય શિબિરો</p>
+          </div>
+        </div>
+      </div>
+      <div class="max-w-7xl mx-auto px-4 py-12">
+        <h2 class="text-3xl font-bold text-center text-amber-300 mb-12">
+          <span class="block text-4xl mb-2">ફોટો ગેલેરી</span>
+        </h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div
+            class="golden-border rounded-xl aspect-square bg-gradient-to-br from-amber-900/50 to-amber-800/30 flex items-center justify-center card-hover">
+            <div class="flex flex-col items-center p-4"><span class="text-4xl">🐄</span>
+              <p class="text-amber-200 text-sm mt-2 text-center">ગૌ સેવા</p>
+            </div>
+          </div>
+          <div
+            class="golden-border rounded-xl aspect-square bg-gradient-to-br from-amber-900/50 to-amber-800/30 flex items-center justify-center card-hover">
+            <div class="flex flex-col items-center p-4"><span class="text-4xl">🎵</span>
+              <p class="text-amber-200 text-sm mt-2 text-center">ધુન કાર્યક્રમ</p>
+            </div>
+          </div>
+          
+          <div
+            class="golden-border rounded-xl aspect-square bg-gradient-to-br from-amber-900/50 to-amber-800/30 flex items-center justify-center card-hover">
+            <div class="flex flex-col items-center p-4"><span class="text-4xl">🦚</span>
+              <p class="text-amber-200 text-sm mt-2 text-center">ઉત્સવ</p>
+            </div>
+          </div>
+        </div>
+      </div>
+       <div class="max-w-4xl mx-auto px-10 py-20">
+        <div class="golden-border rounded-2xl p-8 bg-gradient-to-r from-amber-900/40 via-amber-800/30 to-amber-900/40">
+          <h2 class="text-1xl font-bold text-center text-amber-300 mb-10">📊 ફાળો આંકડા</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+            <div>
+              <p class="text-4xl font-bold shimmer-text" id="home-monthly-total">₹0</p>
+              <p class="text-amber-200/70 mt-2">આ મહિને</p>
+            </div>
+            <div>
+              <p class="text-4xl font-bold shimmer-text" id="home-6month-total">₹0</p>
+              <p class="text-amber-200/70 mt-2">છેલ્લા 6 મહિના</p>
+            </div>
+            <div>
+              <p class="text-4xl font-bold shimmer-text" id="home-yearly-total">₹0</p>
+              <p class="text-amber-200/70 mt-2">આ વર્ષે</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="page-about" class="page-content hidden">
+      <div class="max-w-5xl mx-auto px-4 py-12">
+        <div class="golden-border rounded-2xl p-8 mb-8 bg-gradient-to-br from-slate-800/80 to-slate-900/80">
+          <h2 class="text-3xl font-bold text-amber-300 mb-6 text-center">🙏 ટ્રસ્ટ પરિચય</h2>
+          <p class="text-amber-100/80 text-lg leading-relaxed text-center">રાધાકૃષ્ણ જનહિતકારી ટ્રસ્ટ એ ગૌ સેવા, ધાર્મિક
+            કાર્યો અને સમાજ કલ્યાણ માટે સમર્પિત એક બિનનફાકારક સંસ્થા છે. મોરપીંછ ગૌ સેવા ધુન મંડળ દ્વારા અમે ભજન-કીર્તન,
+            ગૌ સેવા અને સામાજિક સેવાના કાર્યો કરીએ છીએ.</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+          <div class="golden-border rounded-2xl p-6 bg-gradient-to-br from-slate-800/80 to-slate-900/80 card-hover">
+            <h3 class="text-2xl font-bold text-amber-300 mb-4 text-center">🎯 અમારું મિશન</h3>
+            <ul class="text-amber-100/80 space-y-2">
+              <li>• ગાયોની સેવા અને રક્ષણ</li>
+              <li>• ધાર્મિક અને સાંસ્કૃતિક કાર્યક્રમો</li>
+              <li>• સમાજના જરૂરિયાતમંદોની મદદ</li>
+              <li>• યુવાનોમાં સંસ્કાર સિંચન</li>
+            </ul>
+          </div>
+          <div class="golden-border rounded-2xl p-6 bg-gradient-to-br from-slate-800/80 to-slate-900/80 card-hover">
+            <h3 class="text-2xl font-bold text-amber-300 mb-4 text-center">👁️ અમારું વિઝન</h3>
+            <ul class="text-amber-100/80 space-y-2">
+              <li>• ગૌ સેવાનો વ્યાપ વધારવો</li>
+              <li>• ધાર્મિક મૂલ્યોનું જતન</li>
+              <li>• સમાજમાં એકતા અને પ્રેમ</li>
+              <li>• સેવાભાવી સમુદાયનું નિર્માણ</li>
+            </ul>
+          </div>
+        </div>
+        <div class="golden-border rounded-2xl p-8 bg-gradient-to-br from-slate-800/80 to-slate-900/80">
+          <h2 class="text-3xl font-bold text-amber-300 mb-8 text-center">👥 સભ્ય યાદી</h2><!-- President -->
+          <div class="mb-6">
+            <h3 class="text-xl font-bold text-amber-400 mb-4 border-b border-amber-500/30 pb-2">🏆 પ્રમુખ</h3>
+            <div id="members-pramukh" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <p class="text-amber-100/60 italic">કોઈ સભ્ય નથી</p>
+            </div>
+          </div>
+          <div class="mb-6">
+            <h3 class="text-xl font-bold text-amber-400 mb-4 border-b border-amber-500/30 pb-2">🥈 ઉપપ્રમુખ</h3>
+            <div id="members-uppramukh" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <p class="text-amber-100/60 italic">કોઈ સભ્ય નથી</p>
+            </div>
+          </div>
+          <div class="mb-6">
+            <h3 class="text-xl font-bold text-amber-400 mb-4 border-b border-amber-500/30 pb-2">📋 કમિટી સભ્યો</h3>
+            <div id="members-committee" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <p class="text-amber-100/60 italic">કોઈ સભ્ય નથી</p>
+            </div>
+          </div>
+          <div class="mb-6">
+            <h3 class="text-xl font-bold text-amber-400 mb-4 border-b border-amber-500/30 pb-2">💰 એકાઉન્ટ વિભાગ</h3>
+            <div id="members-account" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <p class="text-amber-100/60 italic">કોઈ સભ્ય નથી</p>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-amber-400 mb-4 border-b border-amber-500/30 pb-2">👤 સામાન્ય સભ્યો</h3>
+            <div id="members-general" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <p class="text-amber-100/60 italic">કોઈ સભ્ય નથી</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="page-members" class="page-content hidden">
+      <div class="max-w-6xl mx-auto px-4 py-12">
+        <h2 class="text-3xl font-bold text-amber-300 mb-8 text-center">👥 સભ્ય માહિતી</h2>
+        <div class="flex flex-wrap justify-center gap-2 mb-8"><button onclick="filterMembers('all', this)"
+            class="filter-btn active px-4 py-2 rounded-full bg-amber-600 text-white text-sm">બધા</button> <button
+            onclick="filterMembers('unpaid', this)"
+            class="filter-btn px-4 py-2 rounded-full bg-slate-700 text-amber-200 hover:bg-red-600 text-sm">❌
+            બાકી</button> <button onclick="filterMembers('paid', this)"
+            class="filter-btn px-4 py-2 rounded-full bg-slate-700 text-amber-200 hover:bg-green-600 text-sm">✅
+            ભરેલ</button>
+        </div>
+        <div class="golden-border rounded-xl p-4 mb-6 bg-gradient-to-r from-amber-900/40 to-amber-800/30 text-center">
+          <p class="text-amber-200">📅 વર્તમાન મહિનો: <span id="current-month-display"
+              class="font-bold text-amber-300"></span></p>
+        </div>
+        <div id="members-list" class="space-y-4">
+          <div class="text-center text-amber-200/60 py-8"><span class="text-4xl mb-4 block">👥</span>
+            <p>કોઈ સભ્ય નથી. એડમિન પેનલમાં સભ્યો ઉમેરો.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="page-admin" class="page-content hidden">
+      <div class="max-w-6xl mx-auto px-4 py-12">
+        <h2 class="text-3xl font-bold text-amber-300 mb-8 text-center">⚙️ એડમિન પેનલ</h2>
+        <!-- login form shown when not authenticated -->
+        <div id="admin-login-form" class="max-w-md mx-auto mb-8">
+          <div class="space-y-4 bg-slate-800/80 p-6 rounded-lg">
+            <h3 class="text-xl font-bold text-amber-300 text-center">Login</h3>
+            <input id="admin-username" type="text" placeholder="Username" class="w-full px-4 py-2 rounded bg-slate-700 text-white" />
+            <input id="admin-password" type="password" placeholder="Password" class="w-full px-4 py-2 rounded bg-slate-700 text-white" />
+            <button onclick="handleAdminLogin()" class="w-full py-2 bg-amber-600 text-white rounded">Login</button>
+          </div>
+        </div>
+        <div id="admin-content" class="hidden"><!-- Stats Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+          <div class="golden-border rounded-xl p-4 bg-gradient-to-br from-slate-800/80 to-slate-900/80 text-center">
+            <p class="text-3xl font-bold text-amber-300" id="admin-total-members">0</p>
+            <p class="text-amber-200/70 text-sm">કુલ સભ્યો</p>
+          </div>
+          <div class="golden-border rounded-xl p-4 bg-gradient-to-br from-green-900/50 to-green-800/30 text-center">
+            <p class="text-3xl font-bold text-green-400" id="admin-paid-count">0</p>
+            <p class="text-green-200/70 text-sm">ભરેલ</p>
+          </div>
+          <div class="golden-border rounded-xl p-4 bg-gradient-to-br from-red-900/50 to-red-800/30 text-center">
+            <p class="text-3xl font-bold text-red-400" id="admin-unpaid-count">0</p>
+            <p class="text-red-200/70 text-sm">બાકી</p>
+          </div>
+          <div class="golden-border rounded-xl p-4 bg-gradient-to-br from-amber-900/50 to-amber-800/30 text-center">
+            <p class="text-3xl font-bold shimmer-text" id="admin-monthly-collection">₹0</p>
+            <p class="text-amber-200/70 text-sm">મહિનાનું કલેક્શન</p>
+          </div>
+        </div>
+        <div class="golden-border rounded-xl p-6 mb-8 bg-gradient-to-br from-slate-800/80 to-slate-900/80">
+          <h3 class="text-xl font-bold text-amber-300 mb-4">📊 કલેક્શન આંકડા</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div class="bg-slate-700/50 rounded-lg p-4 text-center">
+                <p class="text-2xl font-bold text-amber-300" id="stats-monthly">₹0</p>
+                <p class="text-amber-200/70 text-sm">આ મહિને</p>
+              </div>
+              <div class="bg-slate-700/50 rounded-lg p-4 text-center">
+                <p class="text-2xl font-bold text-amber-300" id="stats-6month">₹0</p>
+                <p class="text-amber-200/70 text-sm">6 મહિના</p>
+              </div>
+              <div class="bg-slate-700/50 rounded-lg p-4 text-center">
+                <p class="text-2xl font-bold text-amber-300" id="stats-yearly">₹0</p>
+                <p class="text-amber-200/70 text-sm">1 વર્ષ</p>
+              </div>
+            </div>
+        </div>
+        <div class="golden-border rounded-xl p-6 mb-8 bg-gradient-to-br from-slate-800/80 to-slate-900/80">
+          <h3 class="text-xl font-bold text-amber-300 mb-4">➕ નવો સભ્ય ઉમેરો</h3>
+          <form id="add-member-form" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div><label class="block text-amber-200 mb-2 text-sm">સભ્યનું નામ *</label> <input type="text"
+                  id="member-name" required
+                  class="w-full px-4 py-3 rounded-lg bg-slate-700 border border-amber-500/30 text-white focus:outline-none focus:border-amber-500"
+                  placeholder="નામ લખો">
+              </div>
+              <div><label class="block text-amber-200 mb-2 text-sm">WhatsApp નંબર *</label> <input type="tel"
+                  id="member-phone" required
+                  class="w-full px-4 py-3 rounded-lg bg-slate-700 border border-amber-500/30 text-white focus:outline-none focus:border-amber-500"
+                  placeholder="10 અંકનો નંબર">
+              </div>
+            </div>
+            <div><label class="block text-amber-200 mb-2 text-sm">પદ *</label> <select id="member-role" required
+                class="w-full px-4 py-3 rounded-lg bg-slate-700 border border-amber-500/30 text-white focus:outline-none focus:border-amber-500">
+                <option value="">પદ પસંદ કરો</option>
+                <option value="pramukh">પ્રમુખ</option>
+                <option value="uppramukh">ઉપપ્રમુખ</option>
+                <option value="committee">કમિટી સભ્ય</option>
+                <option value="account">એકાઉન્ટ વિભાગ</option>
+                <option value="general">સામાન્ય સભ્ય</option>
+              </select>
+            </div><button type="submit" id="add-member-btn"
+              class="w-full py-3 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 text-white font-bold hover:from-amber-500 hover:to-amber-400 transition-all">
+              ➕ સભ્ય ઉમેરો </button>
+          </form>
+        </div>
+        <div class="golden-border rounded-xl p-6 bg-gradient-to-br from-slate-800/80 to-slate-900/80">
+          <h3 class="text-xl font-bold text-amber-300 mb-4">📋 સભ્ય વ્યવસ્થાપન</h3>
+          <div id="admin-members-list" class="space-y-3">
+            <div class="text-center text-amber-200/60 py-8"><span class="text-4xl mb-4 block">👥</span>
+              <p>કોઈ સભ્ય નથી</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="receipt-modal"
+      class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+      <div class="receipt-template rounded-xl p-6 max-w-md w-full text-slate-800 relative"><button
+          onclick="closeReceiptModal()"
+          class="absolute top-2 right-2 text-slate-500 hover:text-slate-700 text-2xl">×</button>
+        <div class="text-center mb-4"><span class="text-4xl">🦚</span>
+          <h3 class="text-xl font-bold text-amber-800 mt-2">રાધાકૃષ્ણ જનહિતકારી ટ્રસ્ટ</h3>
+         
+        </div>
+        <div class="border-t-2 border-b-2 border-amber-600 py-4 my-4">
+          <h4 class="text-center font-bold text-amber-800 mb-3">📜 ફાળો રસીદ</h4>
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between"><span class="text-slate-600">રસીદ નં:</span> <span id="receipt-no"
+                class="font-bold"></span>
+            </div>
+            <div class="flex justify-between"><span class="text-slate-600">રજિસ્ટ્રેશન નંબર:</span> <span id="receipt-regno"
+                class="font-bold">E10308</span>
+            </div>
+           
+            <div class="flex justify-between"><span class="text-slate-600">તારીખ:</span> <span id="receipt-date"
+                class="font-bold"></span>
+            </div>
+            <div class="flex justify-between"><span class="text-slate-600">સભ્યનું નામ:</span> <span id="receipt-name"
+                class="font-bold"></span>
+            </div>
+            <div class="flex justify-between"><span class="text-slate-600">મહિનો:</span> <span id="receipt-month"
+                class="font-bold"></span>
+            </div>
+            <div class="flex justify-between text-lg"><span class="text-slate-600">રકમ:</span> <span id="receipt-amount"
+                class="font-bold text-green-700">₹100</span>
+            </div>
+          </div>
+        </div>
+        <div class="text-center text-xs text-slate-500 mb-4">
+          ✨ આપના ફાળા બદલ ખૂબ ખૂબ આભાર ✨
+        </div>
+        <div class="flex gap-2"><button onclick="sendWhatsApp()"
+            class="flex-1 py-2 rounded-lg bg-green-600 text-white font-bold hover:bg-green-500 text-sm"> 📱 WhatsApp
+            મોકલો </button> <button onclick="closeReceiptModal()"
+            class="flex-1 py-2 rounded-lg bg-slate-600 text-white font-bold hover:bg-slate-500 text-sm"> બંધ કરો
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="delete-modal"
+      class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+      <div class="bg-slate-800 rounded-xl p-6 max-w-sm w-full border border-red-500/50">
+        <h3 class="text-xl font-bold text-red-400 mb-4 text-center">⚠️ ખાતરી કરો</h3>
+        <p class="text-amber-200/80 text-center mb-6">શું તમે ખરેખર આ સભ્યને કાઢી નાખવા માંગો છો?</p>
+        <p id="delete-member-name" class="text-white font-bold text-center mb-6"></p>
+        <div class="flex gap-3"><button onclick="confirmDelete()"
+            class="flex-1 py-2 rounded-lg bg-red-600 text-white font-bold hover:bg-red-500">હા, કાઢી નાખો</button>
+          <button onclick="closeDeleteModal()"
+            class="flex-1 py-2 rounded-lg bg-slate-600 text-white font-bold hover:bg-slate-500">રદ કરો</button>
+        </div>
+      </div>
+    </div>
+    <footer
+      class="bg-gradient-to-r from-amber-900/50 via-amber-800/40 to-amber-900/50 border-t border-amber-500/30 py-8 mt-12">
+      <div class="max-w-4xl mx-auto text-center px-4">
+        <div class="flex justify-center gap-4 mb-4"><span class="text-3xl">🦚</span> <span class="text-3xl">🐄</span>
+          <span class="text-3xl">🙏</span>
+        </div>
+        <p class="text-amber-300 font-bold">રાધાકૃષ્ણ જનહિતકારી ટ્રસ્ટ</p>
+        <p class="text-amber-200/70 text-sm mt-2">© This is a Software Generated By Elitecode IT solution</p>
+        <h4 class="font-bold font-sora text-foreground mb-5 text-sm tracking-wide">Services</h4>
+        <p>
+          <button type="button" class="text-sm text-muted-foreground hover:text-primary transition-colors">Web
+            Development</button>
+        </p>
+        <p>
+          <button type="button" class="text-sm text-muted-foreground hover:text-primary transition-colors">software
+            Development</button>
+        </p>
+        <h4 class="font-bold font-sora text-foreground mb-5 text-sm tracking-wide">Contact</h4>
+        <span class="text-sm text-muted-foreground whitespace-pre-line leading-relaxed">elitecodeitsolution@gmail.com</span>
+      </div>
+    </footer>
+  </div>
+  <script>
+
+    const defaultConfig = {
+      trust_name: 'રાધાકૃષ્ણ જનહિતકારી ટ્રસ્ટ',
+      primary_color: '#f59e0b',
+      secondary_color: '#1a1a2e',
+      text_color: '#fef3c7',
+      accent_color: '#d97706',
+      surface_color: '#1e293b'
+    };
+
+    let config = { ...defaultConfig };
+    let allData = [];
+    let members = [];
+    let payments = [];
+    let currentFilter = 'all';
+    let memberToDelete = null;
+    let currentReceipt = null;
+    let isAddingMember = false;
+    let isAdminLogged = false; // track admin authentication
+    const REPORT_START_DATE = new Date(2026, 2, 4); // 04-03-2026
+    let reportChart = null;
+
+
+    const gujaratiMonths = [
+      'જાન્યુઆરી', 'ફેબ્રુઆરી', 'માર્ચ', 'એપ્રિલ', 'મે', 'જૂન',
+      'જુલાઈ', 'ઓગસ્ટ', 'સપ્ટેમ્બર', 'ઓક્ટોબર', 'નવેમ્બર', 'ડિસેમ્બર'
+    ];
+
+    function getCurrentMonth() {
+      const now = new Date();
+      return `${gujaratiMonths[now.getMonth()]} ${now.getFullYear()}`;
+    }
+
+    function getCurrentMonthKey() {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    }
+
+
+const dataHandler = {
+  onDataChanged(data) {
+
+    allData = data;
+
+    // API data = members - filter out non-member records
+    members = data.filter(d => d.name && (d.position || d.number)).map(m => ({
+      _id: m._id || m.__backendId,
+      __backendId: m._id || m.__backendId,
+      name: m.name || '',
+      phone: m.number || m.phone || '',
+      role: m.position || m.role || 'general',
+      status: m.status || 'active',
+      amount: m.amount || 0
+    }));
+
+    payments = data.filter(d => d.type === 'payment') || [];
+
+    updateUI();
+  }
+};
+
+    const LOCAL_STORAGE_KEY = 'rk_trust_data';
+
+    function loadLocalData() {
+      try {
+        const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveLocalData(data) {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
+    }
+
+    async function readJsonSafe(res) {
+      const text = await res.text();
+      if (!text) return {};
+      try {
+        return JSON.parse(text);
+      } catch {
+        const trimmed = text.trim();
+        if (trimmed.startsWith('<')) {
+          return { message: res.statusText };
+        }
+        return { message: trimmed.slice(0, 200) };
+      }
+    }
+
+    async function fetchAllData() {
+
+  try {
+
+    
+    const res = await fetch(API_URL);
+    const data = await readJsonSafe(res);
+
+    if (!res.ok) {
+      console.error("Fetch Error:", data?.message || res.statusText);
+      return;
+    }
+
+    dataHandler.onDataChanged(Array.isArray(data) ? data : []);
+
+  } catch (error) {
+
+    console.error("Fetch Error:", error);
+
+  }
+
+}
+    const DEFAULT_API_BASE_URL =
+      window.location.origin && window.location.origin !== 'null'
+        ? window.location.origin
+        : 'http://localhost:3000';
+
+    const API_BASE_URL = (() => {
+      try {
+        const url = new URL(window.location.href);
+        const fromQuery = url.searchParams.get('apiBase');
+        if (fromQuery) return fromQuery;
+      } catch {}
+
+      const fromStorage = (localStorage.getItem('rk_api_base_url') || '').trim();
+      if (fromStorage) return fromStorage;
+
+      return DEFAULT_API_BASE_URL;
+    })();
+
+    const API_URL = `${API_BASE_URL.replace(/\/$/, '')}/api/data`;
+    async function createRecord(payload) {
+
+  try {
+
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await readJsonSafe(res);
+
+    if (!res.ok) {
+      return { isOk: false, message: result?.message || `Request failed (${res.status})` };
+    }
+
+    if (result.isOk) {
+      await fetchAllData();
+    }
+
+    return result;
+
+  } catch (error) {
+
+    console.error("Create Error:", error);
+    return { isOk: false, message: "Network error: API not reachable" };
+
+  }
+
+}
+    async function deleteRecord(record) {
+      try {
+        const id = record._id || record.__backendId;
+        const res = await fetch(`${API_URL}/${id}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+
+        const result = await readJsonSafe(res);
+        if (!res.ok) {
+          return { isOk: false, message: result?.message || `Request failed (${res.status})` };
+        }
+        console.log("Delete Result:", result.isOk);
+        if (result.isOk) {
+          console.log("Record deleted successfully");
+          await fetchAllData();
+        }
+        return result;
+      } catch (error) {
+        console.error("Delete Error:", error);
+        return { isOk: false, message: "Network error: API not reachable" };
+      }
+    }
+
+    async function initApp() {
+
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange: async (newConfig) => {
+            config = { ...defaultConfig, ...newConfig };
+            applyConfig();
+          },
+          mapToCapabilities: (cfg) => ({
+            recolorables: [
+              { get: () => cfg.primary_color || defaultConfig.primary_color, set: (v) => { cfg.primary_color = v; window.elementSdk.setConfig({ primary_color: v }); } },
+              { get: () => cfg.secondary_color || defaultConfig.secondary_color, set: (v) => { cfg.secondary_color = v; window.elementSdk.setConfig({ secondary_color: v }); } },
+              { get: () => cfg.text_color || defaultConfig.text_color, set: (v) => { cfg.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
+              { get: () => cfg.accent_color || defaultConfig.accent_color, set: (v) => { cfg.accent_color = v; window.elementSdk.setConfig({ accent_color: v }); } },
+              { get: () => cfg.surface_color || defaultConfig.surface_color, set: (v) => { cfg.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } }
+            ],
+            borderables: [],
+            fontEditable: undefined,
+            fontSizeable: undefined
+          }),
+          mapToEditPanelValues: (cfg) => new Map([
+            ['trust_name', cfg.trust_name || defaultConfig.trust_name],
+            ['mandal_name', cfg.mandal_name || defaultConfig.mandal_name]
+          ])
+        });
+      }
+
+
+      if (window.dataSdk) {
+        const result = await window.dataSdk.init(dataHandler);
+        if (!result.isOk) {
+          console.error('Failed to initialize Data SDK');
+        }
+      } else {
+        await fetchAllData();   
+      }
+      
+
+      document.getElementById('current-month-display').textContent = getCurrentMonth();
+
+
+      document.getElementById('add-member-form').addEventListener('submit', handleAddMember);
+
+      applyConfig();
+    }
+
+    function applyConfig() {
+      const trustName = config.trust_name || defaultConfig.trust_name;
+      const mandalName = config.mandal_name || defaultConfig.mandal_name;
+
+      document.getElementById('nav-trust-name').textContent = trustName;
+      document.getElementById('hero-trust-name').textContent = trustName;
+      document.getElementById('hero-mandal-name').textContent = mandalName;
+    }
+
+    function showPage(page) {
+      if (page === 'admin') {
+        if (!isAdminLogged) {
+          // display login form
+          document.getElementById('admin-login-form').classList.remove('hidden');
+          document.getElementById('admin-content').classList.add('hidden');
+        }
+      }
+
+      document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
+      document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+
+      document.getElementById(`page-${page}`).classList.remove('hidden');
+      document.querySelector(`[data-page="${page}"]`).classList.add('active');
+    }
+
+    function handleAdminLogin() {
+      const user = document.getElementById('admin-username').value.trim();
+      const pass = document.getElementById('admin-password').value.trim();
+      if (user === 'RKJT' && pass === 'E10308') {
+        isAdminLogged = true;
+        document.getElementById('admin-login-form').classList.add('hidden');
+        document.getElementById('admin-content').classList.remove('hidden');
+        showToast('Logged in successfully', 'success');
+      } else {
+        showToast('Invalid credentials', 'error');
+      }
+    }
+
+    async function handleAddMember_legacy(e) {
+      e.preventDefault();
+
+      if (members.length >= 999) {
+        showToast('મહત્તમ 999 સભ્યોની મર્યાદા પહોંચી ગઈ છે!', 'error');
+        return;
+      }
+
+      const name = document.getElementById('member-name').value.trim();
+      const phone = document.getElementById('member-phone').value.replace(/\D/g, '');
+      const role = document.getElementById('member-role').value;
+
+      if (!name || !phone || !role) {
+        showToast('કૃપા કરી બધી માહિતી ભરો', 'error');
+        return;
+      }
+
+      const duplicateMember = members.find(m => {
+        const existingPhone = (m.phone || '').replace(/\D/g, '');
+        const existingName = (m.name || '').trim().toLowerCase();
+        return existingPhone === phone || existingName === name.toLowerCase();
+      });
+
+      if (duplicateMember) {
+        showToast('Member already saved. One-time entry only.', 'info');
+        return;
+      }
+
+      const btn = document.getElementById('add-member-btn');
+      btn.disabled = true;
+      btn.textContent = 'ઉમેરી રહ્યા છીએ...';
+
+      const [result] = await Promise.all([
+        window.dataSdk.create({
+          type: 'member',
+          name: name,
+          phone: phone,
+          role: role,
+          joinDate: new Date().toISOString()
+        }),
+        new Promise(resolve => setTimeout(resolve, 500))
+      ]);
+
+      btn.disabled = false;
+      btn.textContent = '➕ સભ્ય ઉમેરો';
+
+      if (result.isOk) {
+        showToast('સભ્ય સફળતાપૂર્વક ઉમેરાયો!', 'success');
+        document.getElementById('add-member-form').reset();
+      } else {
+        showToast('સભ્ય ઉમેરવામાં ભૂલ થઈ', 'error');
+      }
+    }
+
+    function normalizeMemberName(name) {
+      return (name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+    }
+
+    function normalizePhone(phone) {
+      const digits = String(phone ?? '').replace(/\D/g, '');
+      if (digits.length === 12 && digits.startsWith('91')) {
+        return digits.slice(2);
+      }
+      return digits;
+    }
+
+    async function handleAddMember(e) {
+      e.preventDefault();
+
+      if (isAddingMember) return;
+
+      if (members.length >= 999) {
+        showToast('Maximum 999 members limit reached!', 'error');
+        return;
+      }
+
+      const rawName = document.getElementById('member-name').value.trim();
+      const name = normalizeMemberName(rawName);
+      const phone = normalizePhone(document.getElementById('member-phone').value);
+      const role = document.getElementById('member-role').value;
+
+      if (!name || !phone || !role) {
+        showToast('Please fill all required fields', 'error');
+        return;
+      }
+
+      if (phone.length !== 10) {
+        showToast('Please enter a valid 10-digit number', 'error');
+        return;
+      }
+
+      const duplicateMember = members.find(m => {
+        const existingPhone = normalizePhone(m.phone);
+        const existingName = normalizeMemberName(m.name);
+        return existingPhone === phone || existingName === name;
+      });
+
+      if (duplicateMember) {
+        showToast('Member already saved. One-time entry only.', 'info');
+        return;
+      }
+
+      const btn = document.getElementById('add-member-btn');
+      const defaultBtnText = btn.dataset.defaultText || btn.textContent;
+      btn.dataset.defaultText = defaultBtnText;
+      isAddingMember = true;
+      btn.disabled = true;
+      btn.textContent = 'Adding...';
+
+      let result;
+      try {
+        [result] = await Promise.all([
+          createRecord({
+            name: rawName,
+            number: phone,
+            position: role
+          }),
+          new Promise(resolve => setTimeout(resolve, 500))
+        ]);
+        if (!result) {
+          result = { isOk: false };
+        }
+      } catch (err) {
+        console.error('Add member failed', err);
+        result = { isOk: false };
+      } finally {
+        isAddingMember = false;
+        btn.disabled = false;
+        btn.textContent = defaultBtnText;
+      }
+
+      if (result.isOk) {
+        showToast('Member added successfully!', 'success');
+        document.getElementById('add-member-form').reset();
+      } else {
+        showToast(result.message || 'Failed to add member', 'error');
+      }
+    }
+
+    async function markAsPaid(memberId) {
+      const member = members.find(m => m._id === memberId || m.__backendId === memberId);
+      if (!member) return;
+
+      const monthKey = getCurrentMonthKey();
+      const existingPayment = payments.find(p => (p.memberId === member._id || p.memberId === member.__backendId) && p.month === monthKey);
+
+      if (existingPayment) {
+        showToast('આ મહિનાનો ફાળો પહેલેથી ભરેલ છે', 'info');
+        return;
+      }
+
+      if (allData.length >= 999) {
+        showToast('ડેટા મર્યાદા પહોંચી ગઈ છે!', 'error');
+        return;
+      }
+
+      let receiptNoNum = 1;
+      const existingReceiptNos = payments.map(p => {
+        if (typeof p.receiptNo === 'string' && p.receiptNo.startsWith('RKJT-')) {
+          const num = parseInt(p.receiptNo.substring(5));
+          return isNaN(num) ? 0 : num;
+        }
+        const num = parseInt(p.receiptNo);
+        return isNaN(num) ? 0 : num;
+      }).filter(n => n > 0);
+      if (existingReceiptNos.length > 0) {
+        receiptNoNum = Math.max(...existingReceiptNos) + 1;
+      }
+      const receiptNo = `RKJT-${receiptNoNum}`;
+
+      const now = new Date();
+
+      let result;
+      try {
+        result = await createRecord({
+          type: 'payment',
+          memberId: member._id || member.__backendId,
+          memberName: member.name,
+          memberPhone: member.phone,
+          month: monthKey,
+          year: now.getFullYear(),
+          amount: 100,
+          paid: true,
+          paidDate: now.toISOString(),
+          receiptNo: receiptNo
+        });
+      } catch (err) {
+        console.error('Mark as paid failed', err);
+        result = { isOk: false };
+      }
+
+      if (result.isOk) {
+        showToast('ફાળો ભરેલ તરીકે માર્ક થયો!', 'success');
+        const REGISTRATION_NO = 'E10308';
+      currentReceipt = {
+          receiptNo,
+          regNo: REGISTRATION_NO,
+          name: member.name,
+          phone: member.phone,
+          month: getCurrentMonth(),
+          date: now.toLocaleDateString('gu-IN'),
+          amount: 100
+        };
+        showReceiptModal();
+      } else {
+        showToast('ભૂલ થઈ, ફરી પ્રયાસ કરો', 'error');
+      }
+    }
+
+    function showReceiptModal() {
+      if (!currentReceipt) return;
+
+      // compute totals for display
+      const now = new Date();
+      const monthKey = getCurrentMonthKey();
+      const monthlyTotal = payments.filter(p => p.month === monthKey).reduce((sum, p) => sum + (p.amount || 0), 0);
+      const yearlyTotal = payments.filter(p => p.year === now.getFullYear()).reduce((sum, p) => sum + (p.amount || 0), 0);
+
+      document.getElementById('receipt-no').textContent = currentReceipt.receiptNo;
+      document.getElementById('receipt-regno').textContent = currentReceipt.regNo || 'E10308';
+     
+      document.getElementById('receipt-date').textContent = currentReceipt.date;
+      document.getElementById('receipt-name').textContent = currentReceipt.name;
+      document.getElementById('receipt-month').textContent = currentReceipt.month;
+      document.getElementById('receipt-amount').textContent = `₹${currentReceipt.amount}`;
+
+      document.getElementById('receipt-modal').classList.remove('hidden');
+      document.getElementById('receipt-modal').classList.add('flex');
+    }
+
+    function closeReceiptModal() {
+      document.getElementById('receipt-modal').classList.add('hidden');
+      document.getElementById('receipt-modal').classList.remove('flex');
+      currentReceipt = null;
+    }
+
+    function sendWhatsApp() {
+      if (!currentReceipt) return;
+
+      // compute totals again for message (same logic as modal)
+      const now = new Date();
+      const monthKey = getCurrentMonthKey();
+      const monthlyTotal = payments.filter(p => p.month === monthKey).reduce((sum, p) => sum + (p.amount || 0), 0);
+      const yearlyTotal = payments.filter(p => p.year === now.getFullYear()).reduce((sum, p) => sum + (p.amount || 0), 0);
+
+      const allTimeTotal = payments.reduce((sum,p)=> sum + (p.amount||0),0);
+      const message = `🙏 રાધાકૃષ્ણ જનહિતકારી ટ્રસ્ટ%0A` +
+        `📜 ફાળો રસીદ%0A` +
+        `━━━━━━━━━━━━%0A` +
+        `રસીદ नं: ${currentReceipt.receiptNo}%0A` +
+        `રજિસ્ટ્રેશન નંબર: ${currentReceipt.regNo || 'E10308'}%0A` +
+        `તારીખ: ${currentReceipt.date}%0A` +
+        `નામ: ${currentReceipt.name}%0A` +
+        `મહિનો: ${currentReceipt.month}%0A` +
+        `રકમ: ₹${currentReceipt.amount}%0A` +
+        `━━━━━━━━━━━━%0A%0A` +
+        `✨ આપના ફાળા બદલ ખૂબ ખુબ આભાર ✨`;
+
+      const phone = normalizePhone(currentReceipt.phone || '');
+      if (!phone || phone.length !== 10) {
+        showToast('માન્ય ફોન નંબર મળ્યો નથી', 'error');
+        return;
+      }
+      const fullPhone = phone.startsWith('91') ? phone : `91${phone}`;
+
+      window.open(`https://wa.me/${fullPhone}?text=${message}`, '_blank');
+      closeReceiptModal();
+    }
+
+    function showDeleteModal(memberId) {
+      const member = members.find(m => m._id === memberId || m.__backendId === memberId);
+      if (!member) return;
+
+      memberToDelete = member;
+      document.getElementById('delete-member-name').textContent = member.name;
+      document.getElementById('delete-modal').classList.remove('hidden');
+      document.getElementById('delete-modal').classList.add('flex');
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('delete-modal').classList.add('hidden');
+      document.getElementById('delete-modal').classList.remove('flex');
+      memberToDelete = null;
+    }
+
+    async function confirmDelete() {
+      if (!memberToDelete) return;
+
+      const result = await deleteRecord(memberToDelete);
+
+      if (result.isOk) {
+        showToast('સભ્ય કાઢી નાખવામાં આવ્યો', 'success');
+      } else {
+        showToast('ભૂલ થઈ, ફરી પ્રયાસ કરો', 'error');
+      }
+
+      closeDeleteModal();
+    }
+
+    function filterMembers(filter, btnEl) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active', 'bg-amber-600');
+        btn.classList.add('bg-slate-700');
+      });
+      if (btnEl) {
+        btnEl.classList.add('active', 'bg-amber-600');
+        btnEl.classList.remove('bg-slate-700');
+      }
+
+      renderMembersList();
+    }
+
+    function updateUI() {
+      renderMembersList();
+      renderAdminMembersList();
+      renderAboutMembers();
+      updateStats();
+    }
+
+    function renderMembersList() {
+      const container = document.getElementById('members-list');
+      const monthKey = getCurrentMonthKey();
+
+      let filteredMembers = members;
+
+      if (currentFilter === 'paid') {
+        filteredMembers = members.filter(m =>
+          payments.some(p => (p.memberId === m._id || p.memberId === m.__backendId) && p.month === monthKey)
+        );
+      } else if (currentFilter === 'unpaid') {
+        filteredMembers = members.filter(m =>
+          !payments.some(p => (p.memberId === m._id || p.memberId === m.__backendId) && p.month === monthKey)
+        );
+      }
+
+      if (filteredMembers.length === 0) {
+        container.innerHTML = `
+          <div class="text-center text-amber-200/60 py-8">
+            <span class="text-4xl mb-4 block">👥</span>
+            <p>${currentFilter === 'all' ? 'કોઈ સભ્ય નથી. એડમિન પેનલમાં સભ્યો ઉમેરો.' : 'કોઈ સભ્ય મળ્યો નથી.'}</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filteredMembers.map(member => {
+        const isPaid = payments.some(p => (p.memberId === member._id || p.memberId === member.__backendId) && p.month === monthKey);
+        const payment = payments.find(p => (p.memberId === member._id || p.memberId === member.__backendId) && p.month === monthKey);
+        const memberPayments = payments.filter(p => p.memberId === member._id || p.memberId === member.__backendId);
+        const totalPaid = memberPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+
+        return `
+          <div class="rounded-xl p-4 ${isPaid ? 'paid-member' : 'unpaid-member'} transition-all">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-full ${isPaid ? 'bg-green-500' : 'bg-red-500'} flex items-center justify-center text-white text-xl font-bold">
+                  ${member.name.charAt(0)}
+                </div>
+                <div>
+                  <h4 class="font-bold text-slate-800">${member.name}</h4>
+                  <p class="text-slate-600 text-sm">📱 ${member.phone}</p>
+                  <p class="text-slate-500 text-xs">કુલ ભરેલ: ₹${totalPaid}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                ${isPaid ? `
+                  <span class="px-3 py-1 rounded-full bg-green-600 text-white text-sm">✅ ભરેલ</span>
+                  <span class="text-xs text-slate-600">${payment?.receiptNo || ''}</span>
+                ` : `
+                  <span class="px-3 py-1 rounded-full bg-red-600 text-white text-sm">❌ બાકી ₹100</span>
+                `}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderAdminMembersList() {
+      const container = document.getElementById('admin-members-list');
+      const monthKey = getCurrentMonthKey();
+
+      if (members.length === 0) {
+        container.innerHTML = `
+          <div class="text-center text-amber-200/60 py-8">
+            <span class="text-4xl mb-4 block">👥</span>
+            <p>કોઈ સભ્ય નથી</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = members.map(member => {
+        const isPaid = payments.some(p => (p.memberId === member._id || p.memberId === member.__backendId) && p.month === monthKey);
+        const roleLabels = {
+          pramukh: 'પ્રમુખ',
+          uppramukh: 'ઉપપ્રમુખ',
+          committee: 'કમિટી સભ્ય',
+          account: 'એકાઉન્ટ',
+          general: 'સામાન્ય'
+        };
+
+        return `
+          <div class="bg-slate-700/50 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full ${isPaid ? 'bg-green-600' : 'bg-red-600'} flex items-center justify-center text-white font-bold">
+                ${member.name.charAt(0)}
+              </div>
+              <div>
+                <h4 class="font-bold text-white">${member.name}</h4>
+                <p class="text-amber-200/70 text-sm">${roleLabels[member.role] || member.role} • ${member.phone}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+              ${isPaid ? `
+                <span class="px-3 py-1 rounded-full bg-green-600/50 text-green-300 text-sm">✅ ભરેલ</span>
+              ` : `
+                <button onclick="markAsPaid('${member._id || member.__backendId}')" class="px-3 py-1 rounded-full bg-amber-600 text-white text-sm hover:bg-amber-500">
+                  💰 ભરેલ માર્ક કરો
+                </button>
+              `}
+              <button onclick="showDeleteModal('${member._id || member.__backendId}')" class="px-3 py-1 rounded-full bg-red-600/50 text-red-300 text-sm hover:bg-red-600">
+                🗑️ કાઢો
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderAboutMembers() {
+      const roleContainers = {
+        pramukh: document.getElementById('members-pramukh'),
+        uppramukh: document.getElementById('members-uppramukh'),
+        committee: document.getElementById('members-committee'),
+        account: document.getElementById('members-account'),
+        general: document.getElementById('members-general')
+      };
+
+      Object.keys(roleContainers).forEach(role => {
+        const roleMembers = members.filter(m => m.role === role);
+        const container = roleContainers[role];
+
+        if (roleMembers.length === 0) {
+          container.innerHTML = '<p class="text-amber-100/60 italic">કોઈ સભ્ય નથી</p>';
+        } else {
+          container.innerHTML = roleMembers.map(m => `
+            <div class="bg-slate-700/30 rounded-lg p-3 flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-amber-600 flex items-center justify-center text-white font-bold">
+                ${m.name.charAt(0)}
+              </div>
+              <div>
+                <p class="text-amber-100 font-medium">${m.name}</p>
+                <p class="text-amber-200/60 text-sm">📱 ${m.phone}</p>
+              </div>
+            </div>
+          `).join('');
+        }
+      });
+    }
+
+    function updateStats() {
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth();
+      const monthKey = getCurrentMonthKey();
+
+      const monthlyPayments = payments.filter(p => p.month === monthKey);
+      const monthlyTotal = monthlyPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+
+      const sixMonthsAgo = new Date(currentYear, currentMonth - 5, 1);
+      const sixMonthPayments = payments.filter(p => {
+        const [year, month] = p.month.split('-').map(Number);
+        const paymentDate = new Date(year, month - 1, 1);
+        return paymentDate >= sixMonthsAgo;
+      });
+      const sixMonthTotal = sixMonthPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+
+      const yearlyPayments = payments.filter(p => p.year === currentYear);
+      const yearlyTotal = yearlyPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+
+      const paidCount = members.filter(m =>
+        payments.some(p => (p.memberId === m._id || p.memberId === m.__backendId) && p.month === monthKey)
+      ).length;
+      const unpaidCount = members.length - paidCount;
+
+      document.getElementById('home-monthly-total').textContent = `₹${monthlyTotal}`;
+      document.getElementById('home-6month-total').textContent = `₹${sixMonthTotal}`;
+      document.getElementById('home-yearly-total').textContent = `₹${yearlyTotal}`;
+
+      document.getElementById('admin-total-members').textContent = members.length;
+      document.getElementById('admin-paid-count').textContent = paidCount;
+      document.getElementById('admin-unpaid-count').textContent = unpaidCount;
+      document.getElementById('admin-monthly-collection').textContent = `₹${monthlyTotal}`;
+
+      document.getElementById('stats-monthly').textContent = `₹${monthlyTotal}`;
+      document.getElementById('stats-6month').textContent = `₹${sixMonthTotal}`;
+      document.getElementById('stats-yearly').textContent = `₹${yearlyTotal}`;
+    }
+
+
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      const bgColor = type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-amber-600';
+      toast.className = `fixed bottom-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+
+    initApp();
+  </script>
+</body>
+
+</html>
