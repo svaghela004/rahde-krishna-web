@@ -1125,7 +1125,7 @@ const dataHandler = {
       updateStats();
     }
 
-    function renderMembersList() {
+    function renderMembersList(searchTerm = '') {
       const container = document.getElementById('members-list');
       const monthKey = getCurrentMonthKey();
 
@@ -1150,6 +1150,11 @@ const dataHandler = {
         `;
         return;
       }
+
+      if(searchTerm?.length > 0) {
+        filteredMembers = filteredMembers.filter(member => member.name.toLowerCase().includes(searchTerm.toLowerCase()));
+      }
+
 
       container.innerHTML = filteredMembers.map(member => {
         const isPaid = payments.some(p => (p.memberId === member._id || p.memberId === member.__backendId) && p.month === monthKey);
@@ -1184,9 +1189,10 @@ const dataHandler = {
       }).join('');
     }
 
-    function renderAdminMembersList() {
+    function renderAdminMembersList(searchTerm = '') {
       const container = document.getElementById('admin-members-list');
       const monthKey = getCurrentMonthKey();
+      let filteredMembers = members;
 
       if (members.length === 0) {
         container.innerHTML = `
@@ -1198,7 +1204,11 @@ const dataHandler = {
         return;
       }
 
-      container.innerHTML = members.map(member => {
+      if(searchTerm?.length > 0) {
+        filteredMembers = filteredMembers.filter(member => member.name.toLowerCase().includes(searchTerm.toLowerCase()));
+      }
+
+      container.innerHTML = filteredMembers.map(member => {
         const isPaid = payments.some(p => (p.memberId === member._id || p.memberId === member.__backendId) && p.month === monthKey);
         const roleLabels = {
           pramukh: 'પ્રમુખ',
@@ -1323,32 +1333,8 @@ const dataHandler = {
 
     function handalUserChange() {
       const searchTerm = document.getElementById('member-search').value.toLowerCase();
-      const filteredMembers = members.filter(m => m.name.toLowerCase().includes(searchTerm));
-      const container = document.getElementById('admin-members-list');
-      if (filteredMembers.length === 0) {
-        container.innerHTML = `
-          <div class="text-center text-amber-200/60 py-8">
-            <span class="text-4xl mb-4 block">🔍</span>
-            <p>કોઈ સભ્ય મળ્યો નથી</p>
-          </div>
-        `;
-        return;
-      }
-      container.innerHTML = filteredMembers.map(m => `
-        <div class="rounded-xl p-4 ${payments.some(p => (p.memberId === m._id || p.memberId === m.__backendId) && p.month === getCurrentMonthKey()) ? 'paid-member' : 'unpaid-member'} transition-all">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
-              <div class="w-12 h-12 rounded-full ${payments.some(p => (p.memberId === m._id || p.memberId === m.__backendId) && p.month === getCurrentMonthKey()) ? 'bg-green-500' : 'bg-red-500'} flex items-center justify-center text-white text-xl font-bold">
-                ${m.name.charAt(0)}
-              </div>
-              <div>
-                <h4 class="font-bold text-slate-800">${m.name}</h4>
-                <p class="text-slate-600 text-sm">📱 ${m.phone}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      `).join('');
+      renderMembersList(searchTerm);
+      renderAdminMembersList(searchTerm);
     }
     
 
