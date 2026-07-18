@@ -650,7 +650,7 @@ const dataHandler = {
       return DEFAULT_API_BASE_URL;
     })();
 
-    const API_URL = `http://127.0.0.1:3000/api/data`;
+    const API_URL = `${API_BASE_URL.replace(/\/$/, '')}/api/data`;
     async function createRecord(payload) {
 
   try {
