@@ -697,7 +697,6 @@ const dataHandler = {
         if (!res.ok) {
           return { isOk: false, message: result?.message || `Request failed (${res.status})` };
         }
-        console.log("Delete Result:", result.isOk);
         if (result.isOk) {
           console.log("Record deleted successfully");
           await fetchAllData();
@@ -1152,7 +1151,7 @@ const dataHandler = {
       }
 
       if(searchTerm?.length > 0) {
-        filteredMembers = filteredMembers.filter(member => member.name.toLowerCase().includes(searchTerm.toLowerCase()));
+        filteredMembers = filteredMembers.filter(member => member.name.toLowerCase().includes(searchTerm.toLowerCase()) || member.phone.toString().toLowerCase().includes(searchTerm.toLowerCase()));
       }
 
 
@@ -1205,7 +1204,7 @@ const dataHandler = {
       }
 
       if(searchTerm?.length > 0) {
-        filteredMembers = filteredMembers.filter(member => member.name.toLowerCase().includes(searchTerm.toLowerCase()));
+        filteredMembers = filteredMembers.filter(member => member.name.toLowerCase().includes(searchTerm.toLowerCase()) || member.phone.toString().toLowerCase().includes(searchTerm.toLowerCase()));
       }
 
       container.innerHTML = filteredMembers.map(member => {
