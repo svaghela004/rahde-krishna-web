@@ -796,11 +796,6 @@ const dataHandler = {
     async function handleAddMember_legacy(e) {
       e.preventDefault();
 
-      if (members.length >= 999) {
-        showToast('મહત્તમ 999 સભ્યોની મર્યાદા પહોંચી ગઈ છે!', 'error');
-        return;
-      }
-
       const name = document.getElementById('member-name').value.trim();
       const phone = document.getElementById('member-phone').value.replace(/\D/g, '');
       const role = document.getElementById('member-role').value;
@@ -864,10 +859,6 @@ const dataHandler = {
 
       if (isAddingMember) return;
 
-      if (members.length >= 999) {
-        showToast('Maximum 999 members limit reached!', 'error');
-        return;
-      }
 
       const rawName = document.getElementById('member-name').value.trim();
       const name = normalizeMemberName(rawName);
@@ -952,11 +943,6 @@ const dataHandler = {
 
       if (existingPayment) {
         showToast('આ મહિનાનો ફાળો પહેલેથી ભરેલ છે', 'info');
-        return;
-      }
-
-      if (allData.length >= 999) {
-        showToast('ડેટા મર્યાદા પહોંચી ગઈ છે!', 'error');
         return;
       }
 
