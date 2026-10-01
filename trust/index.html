@@ -1422,7 +1422,7 @@ const dataHandler = {
       return date.toLocaleDateString('gu-IN');
     }
 
-    function generateMemberPdf() {
+    async function generateMemberPdf() {
       const periodEl = document.getElementById('report-period');
       const pdfBtn = document.getElementById('generate-pdf-btn');
       const selectedMonths = Number(periodEl?.value || 6);
@@ -1441,122 +1441,104 @@ const dataHandler = {
       const periodKeys = new Set(periodMonths.map(m => m.key));
       const periodPayments = payments
         .filter(p => periodKeys.has(p.month))
-        .sort((a, b) => {
-          const byMonth = String(b.month || '').localeCompare(String(a.month || ''));
-          if (byMonth !== 0) return byMonth;
-          return String(b.paidDate || '').localeCompare(String(a.paidDate || ''));
-        });
+        .sort((a, b) => String(b.paidDate || '').localeCompare(String(a.paidDate || '')));
 
-      const totalCollected = periodPayments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
-      const uniquePaidMembers = new Set(periodPayments.map(p => String(p.memberId || '')).filter(Boolean));
+      const totalFund = periodPayments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+      const paidMemberIds = new Set(
+        periodPayments.map(p => String(p.memberId || '')).filter(Boolean)
+      );
+      const paidMemberCount = members.filter(member =>
+        paidMemberIds.has(String(member._id || member.__backendId || ''))
+      ).length;
+      const unpaidMemberCount = members.length - paidMemberCount;
       const reportGeneratedAt = new Date().toLocaleString('gu-IN');
 
-      const summaryRows = members.map((member, index) => {
+      // One clear row per member: Name, Date, Amount, Paid/Not Paid.
+      const memberRows = members.map((member, index) => {
         const memberId = String(member._id || member.__backendId || '');
-        const memberPayments = periodPayments.filter(p => String(p.memberId || '') === memberId);
-        const paidMonths = [...new Set(memberPayments.map(p => p.month).filter(Boolean))];
-        const memberTotal = memberPayments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
-        const lastPayment = memberPayments[0];
+        const memberPayments = periodPayments.filter(
+          p => String(p.memberId || '') === memberId
+        );
+        const amountPaid = memberPayments.reduce(
+          (sum, p) => sum + Number(p.amount || 0),
+          0
+        );
+        const latestPayment = memberPayments[0];
+        const isPaid = memberPayments.length > 0;
+        const statusText = isPaid ? '✅ ભરેલ' : '❌ બાકી';
+        const statusColor = isPaid ? '#166534' : '#b91c1c';
 
         return `
           <tr>
-            <td>${index + 1}</td>
-            <td>${escapeHtml(member.name)}</td>
-            <td>${escapeHtml(member.phone)}</td>
-            <td>${escapeHtml(getRoleLabel(member.role))}</td>
-            <td>${paidMonths.length} / ${selectedMonths}</td>
-            <td>₹${memberTotal.toLocaleString('en-IN')}</td>
-            <td>${lastPayment ? escapeHtml(lastPayment.receiptNo || '-') : '-'}</td>
-            <td>${lastPayment ? escapeHtml(formatReportDate(lastPayment.paidDate)) : '-'}</td>
+            <td style="text-align:center;">${index + 1}</td>
+            <td>${escapeHtml(member.name || '-')}</td>
+            <td style="text-align:center;">${latestPayment ? escapeHtml(formatReportDate(latestPayment.paidDate)) : '-'}</td>
+            <td style="text-align:right;">₹${amountPaid.toLocaleString('en-IN')}</td>
+            <td style="text-align:center; color:${statusColor}; font-weight:700;">${statusText}</td>
           </tr>
         `;
       }).join('');
 
-      const paymentRows = periodPayments.length
-        ? periodPayments.map((payment, index) => `
-            <tr>
-              <td>${index + 1}</td>
-              <td>${escapeHtml(payment.memberName || '-')}</td>
-              <td>${escapeHtml(payment.memberPhone || '-')}</td>
-              <td>${escapeHtml(getRoleLabel(members.find(m => String(m._id || m.__backendId || '') === String(payment.memberId || ''))?.role))}</td>
-              <td>${escapeHtml(periodMonths.find(m => m.key === payment.month)?.label || payment.month || '-')}</td>
-              <td>₹${Number(payment.amount || 0).toLocaleString('en-IN')}</td>
-              <td>${escapeHtml(payment.receiptNo || '-')}</td>
-              <td>${escapeHtml(formatReportDate(payment.paidDate))}</td>
-            </tr>
-          `).join('')
-        : `<tr><td colspan="8" style="text-align:center; padding:16px;">આ સમયગાળા દરમિયાન કોઈ ફાળો ચુકવણી મળી નથી.</td></tr>`;
-
       const reportEl = document.createElement('div');
       reportEl.className = 'pdf-report-document';
-      reportEl.style.position = 'fixed';
-      reportEl.style.left = '-10000px';
+      // Keep the capture element visible to html2canvas. The old implementation
+      // positioned it off-screen with z-index:-1, which could result in a blank PDF.
+      reportEl.style.position = 'absolute';
+      reportEl.style.left = '0';
       reportEl.style.top = '0';
-      reportEl.style.zIndex = '-1';
+      reportEl.style.zIndex = '99999';
+      reportEl.style.display = 'block';
+      reportEl.style.visibility = 'visible';
+      reportEl.style.opacity = '1';
       reportEl.innerHTML = `
         <div style="text-align:center; border-bottom:2px solid #d97706; padding-bottom:12px;">
           <div style="font-size:28px;">🦚</div>
           <h1 style="margin:4px 0 2px; font-size:22px; color:#78350f;">રાધાકૃષ્ણ જનહિતકારી ટ્રસ્ટ</h1>
           <div style="font-size:15px; font-weight:700; color:#92400e;">સભ્ય ફાળો વિગત રિપોર્ટ</div>
-          <div style="font-size:10px; color:#64748b; margin-top:5px;">સમયગાળો: ${selectedMonths} ${selectedMonths === 1 ? 'મહિનો' : 'મહિના'} | ${escapeHtml(periodMonths[periodMonths.length - 1].label)} થી ${escapeHtml(periodMonths[0].label)}</div>
-          <div style="font-size:9px; color:#64748b; margin-top:2px;">રિપોર્ટ જનરેટ: ${escapeHtml(reportGeneratedAt)} | રજિસ્ટ્રેશન નં.: E10308</div>
+          <div style="font-size:10px; color:#64748b; margin-top:5px;">
+            સમયગાળો: ${selectedMonths} ${selectedMonths === 1 ? 'મહિનો' : 'મહિના'} |
+            ${escapeHtml(periodMonths[periodMonths.length - 1].label)} થી
+            ${escapeHtml(periodMonths[0].label)}
+          </div>
+          <div style="font-size:9px; color:#64748b; margin-top:2px;">
+            રિપોર્ટ જનરેટ: ${escapeHtml(reportGeneratedAt)} | રજિસ્ટ્રેશન નં.: E10308
+          </div>
         </div>
 
-        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:14px;">
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:14px;">
           <div style="border:1px solid #cbd5e1; padding:8px; text-align:center; border-radius:6px;">
             <div style="font-size:16px; font-weight:700; color:#92400e;">${members.length}</div>
             <div style="font-size:9px; color:#64748b;">કુલ સભ્યો</div>
           </div>
           <div style="border:1px solid #cbd5e1; padding:8px; text-align:center; border-radius:6px;">
-            <div style="font-size:16px; font-weight:700; color:#166534;">${uniquePaidMembers.size}</div>
-            <div style="font-size:9px; color:#64748b;">ફાળો ભરનાર સભ્યો</div>
+            <div style="font-size:16px; font-weight:700; color:#166534;">${paidMemberCount}</div>
+            <div style="font-size:9px; color:#64748b;">ફાળો ભરેલ</div>
           </div>
           <div style="border:1px solid #cbd5e1; padding:8px; text-align:center; border-radius:6px;">
-            <div style="font-size:16px; font-weight:700; color:#92400e;">${periodPayments.length}</div>
-            <div style="font-size:9px; color:#64748b;">કુલ ચુકવણી</div>
-          </div>
-          <div style="border:1px solid #cbd5e1; padding:8px; text-align:center; border-radius:6px;">
-            <div style="font-size:16px; font-weight:700; color:#166534;">₹${totalCollected.toLocaleString('en-IN')}</div>
-            <div style="font-size:9px; color:#64748b;">કુલ કલેક્શન</div>
+            <div style="font-size:16px; font-weight:700; color:#b91c1c;">${unpaidMemberCount}</div>
+            <div style="font-size:9px; color:#64748b;">ફાળો બાકી</div>
           </div>
         </div>
 
         <div class="pdf-report-section">
-          <h2 style="font-size:14px; color:#78350f; margin:0 0 7px;">1. સભ્ય સારાંશ</h2>
+          <h2 style="font-size:14px; color:#78350f; margin:0 0 7px;">સભ્ય ફાળો વિગત</h2>
           <table>
             <thead>
               <tr>
-                <th style="width:4%;">#</th>
-                <th style="width:17%;">સભ્યનું નામ</th>
-                <th style="width:13%;">મોબાઇલ</th>
-                <th style="width:14%;">પદ</th>
-                <th style="width:10%;">ભરેલા મહિના</th>
-                <th style="width:11%;">કુલ રકમ</th>
-                <th style="width:13%;">રસીદ</th>
-                <th style="width:18%;">છેલ્લી ચુકવણી</th>
+                <th style="width:8%;">#</th>
+                <th style="width:35%;">નામ</th>
+                <th style="width:20%;">તારીખ</th>
+                <th style="width:20%;">રકમ</th>
+                <th style="width:17%;">ચુકવણી</th>
               </tr>
             </thead>
-            <tbody>${summaryRows}</tbody>
+            <tbody>${memberRows}</tbody>
           </table>
         </div>
 
-        <div class="pdf-report-section">
-          <h2 style="font-size:14px; color:#78350f; margin:0 0 7px;">2. ચુકવણીની વિગત</h2>
-          <table>
-            <thead>
-              <tr>
-                <th style="width:4%;">#</th>
-                <th style="width:17%;">સભ્ય</th>
-                <th style="width:13%;">મોબાઇલ</th>
-                <th style="width:14%;">પદ</th>
-                <th style="width:14%;">મહિનો</th>
-                <th style="width:10%;">રકમ</th>
-                <th style="width:13%;">રસીદ નં.</th>
-                <th style="width:15%;">તારીખ</th>
-              </tr>
-            </thead>
-            <tbody>${paymentRows}</tbody>
-          </table>
+        <div style="margin-top:16px; border:2px solid #d97706; background:#fffbeb; padding:12px 14px; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
+          <div style="font-size:14px; font-weight:700; color:#78350f;">💰 કુલ Fund</div>
+          <div style="font-size:18px; font-weight:800; color:#166534;">₹${totalFund.toLocaleString('en-IN')}</div>
         </div>
 
         <div style="border-top:1px solid #cbd5e1; margin-top:18px; padding-top:8px; font-size:9px; color:#64748b; text-align:center;">
@@ -1580,29 +1562,39 @@ const dataHandler = {
         html2canvas: {
           scale: 2,
           useCORS: true,
+          allowTaint: true,
           backgroundColor: '#ffffff',
-          letterRendering: true
+          letterRendering: true,
+          logging: false,
+          scrollX: 0,
+          scrollY: 0,
+          windowWidth: Math.max(document.documentElement.clientWidth, reportEl.scrollWidth)
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: { mode: ['css', 'legacy'] }
       };
 
-      window.html2pdf()
-        .set(options)
-        .from(reportEl)
-        .save()
-        .then(() => {
-          showToast(`${selectedMonths} ${selectedMonths === 1 ? 'મહિનાનો' : 'મહિનાનો'} PDF તૈયાર થયો!`, 'success');
-        })
-        .catch((error) => {
-          console.error('PDF generation failed:', error);
-          showToast('PDF બનાવવામાં ભૂલ થઈ. ફરી પ્રયાસ કરો.', 'error');
-        })
-        .finally(() => {
-          reportEl.remove();
-          pdfBtn.disabled = false;
-          pdfBtn.textContent = originalBtnText;
-        });
+      try {
+        // Let the browser finish layout/font calculation before html2canvas captures it.
+        if (document.fonts && document.fonts.ready) {
+          await document.fonts.ready;
+        }
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+        await window.html2pdf()
+          .set(options)
+          .from(reportEl)
+          .save();
+
+        showToast(`${selectedMonths} ${selectedMonths === 1 ? 'મહિનાનો' : 'મહિનાનો'} PDF તૈયાર થયો!`, 'success');
+      } catch (error) {
+        console.error('PDF generation failed:', error);
+        showToast('PDF બનાવવામાં ભૂલ થઈ. ફરી પ્રયાસ કરો.', 'error');
+      } finally {
+        reportEl.remove();
+        pdfBtn.disabled = false;
+        pdfBtn.textContent = originalBtnText;
+      }
     }
 
     function showToast(message, type = 'info') {
