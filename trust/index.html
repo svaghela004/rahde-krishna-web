@@ -1472,6 +1472,7 @@ const dataHandler = {
           return {
             no: index + 1,
             name: member.name || '-',
+            phone: member.phone || '-',
             date: latestPayment ? formatReportDate(latestPayment.paidDate) : '-',
             amount: amountPaid,
             status: memberPayments.length ? '✅ ભરેલ' : '❌ બાકી'
@@ -1554,10 +1555,11 @@ const dataHandler = {
         };
 
         const columns = [
-          { x: M, w: 70, align: 'center', title: '#' },
-          { x: M + 70, w: 390, align: 'left', title: 'નામ' },
-          { x: M + 460, w: 205, align: 'center', title: 'તારીખ' },
-          { x: M + 665, w: 185, align: 'center', title: 'રકમ' },
+          { x: M, w: 50, align: 'center', title: '#' },
+          { x: M + 50, w: 270, align: 'left', title: 'નામ' },
+          { x: M + 320, w: 190, align: 'center', title: 'ફોન નંબર' },
+          { x: M + 510, w: 170, align: 'center', title: 'તારીખ' },
+          { x: M + 680, w: 170, align: 'center', title: 'રકમ' },
           { x: M + 850, w: 270, align: 'center', title: 'ચુકવણી' }
         ];
         const tableW = W - M * 2;
@@ -1585,11 +1587,12 @@ const dataHandler = {
             ctx.lineTo(col.x, y + rowH);
             ctx.stroke();
           });
-          text(ctx, row.no, columns[0].x + columns[0].w / 2, y + rowH / 2, 11, 400, '#334155', 'center');
-          text(ctx, row.name, columns[1].x + 14, y + rowH / 2, 11, 600, '#0f172a', 'left');
-          text(ctx, row.date, columns[2].x + columns[2].w / 2, y + rowH / 2, 10.5, 400, '#334155', 'center');
-          text(ctx, `₹${Number(row.amount || 0).toLocaleString('en-IN')}`, columns[3].x + columns[3].w / 2, y + rowH / 2, 10.5, 600, '#0f172a', 'center');
-          text(ctx, row.status, columns[4].x + columns[4].w / 2, y + rowH / 2, 10.5, 700, row.status.startsWith('✅') ? '#166534' : '#b91c1c', 'center');
+          text(ctx, row.no, columns[0].x + columns[0].w / 2, y + rowH / 2, 10.5, 400, '#334155', 'center');
+          text(ctx, row.name, columns[1].x + 14, y + rowH / 2, 10.5, 600, '#0f172a', 'left');
+          text(ctx, row.phone, columns[2].x + columns[2].w / 2, y + rowH / 2, 10, 400, '#334155', 'center');
+          text(ctx, row.date, columns[3].x + columns[3].w / 2, y + rowH / 2, 10, 400, '#334155', 'center');
+          text(ctx, `₹${Number(row.amount || 0).toLocaleString('en-IN')}`, columns[4].x + columns[4].w / 2, y + rowH / 2, 10, 600, '#0f172a', 'center');
+          text(ctx, row.status, columns[5].x + columns[5].w / 2, y + rowH / 2, 10, 700, row.status.startsWith('✅') ? '#166534' : '#b91c1c', 'center');
         };
 
         const drawFooter = (ctx, pageNo, totalPages) => {
