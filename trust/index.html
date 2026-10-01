@@ -8,6 +8,7 @@
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="/_sdk/data_sdk.js"></script>
   <script src="/_sdk/element_sdk.js"></script>
   <style>
@@ -1432,166 +1433,234 @@ const dataHandler = {
         return;
       }
 
-      if (typeof window.html2pdf !== 'function') {
+      // Direct jsPDF + Canvas generation is used here instead of html2pdf/html2canvas.
+      // This removes the blank-page issue caused by DOM capture.
+      const JsPDF = window.jspdf?.jsPDF || window.jsPDF;
+      if (typeof JsPDF !== 'function') {
         showToast('PDF module લોડ થયું નથી. કૃપા કરીને પેજ ફરીથી ખોલો.', 'error');
         return;
       }
 
-      const periodMonths = getReportPeriodMonths(selectedMonths);
-      const periodKeys = new Set(periodMonths.map(m => m.key));
-      const periodPayments = payments
-        .filter(p => periodKeys.has(p.month))
-        .sort((a, b) => String(b.paidDate || '').localeCompare(String(a.paidDate || '')));
-
-      const totalFund = periodPayments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
-      const paidMemberIds = new Set(
-        periodPayments.map(p => String(p.memberId || '')).filter(Boolean)
-      );
-      const paidMemberCount = members.filter(member =>
-        paidMemberIds.has(String(member._id || member.__backendId || ''))
-      ).length;
-      const unpaidMemberCount = members.length - paidMemberCount;
-      const reportGeneratedAt = new Date().toLocaleString('gu-IN');
-
-      // One clear row per member: Name, Date, Amount, Paid/Not Paid.
-      const memberRows = members.map((member, index) => {
-        const memberId = String(member._id || member.__backendId || '');
-        const memberPayments = periodPayments.filter(
-          p => String(p.memberId || '') === memberId
-        );
-        const amountPaid = memberPayments.reduce(
-          (sum, p) => sum + Number(p.amount || 0),
-          0
-        );
-        const latestPayment = memberPayments[0];
-        const isPaid = memberPayments.length > 0;
-        const statusText = isPaid ? '✅ ભરેલ' : '❌ બાકી';
-        const statusColor = isPaid ? '#166534' : '#b91c1c';
-
-        return `
-          <tr>
-            <td style="text-align:center;">${index + 1}</td>
-            <td>${escapeHtml(member.name || '-')}</td>
-            <td style="text-align:center;">${latestPayment ? escapeHtml(formatReportDate(latestPayment.paidDate)) : '-'}</td>
-            <td style="text-align:right;">₹${amountPaid.toLocaleString('en-IN')}</td>
-            <td style="text-align:center; color:${statusColor}; font-weight:700;">${statusText}</td>
-          </tr>
-        `;
-      }).join('');
-
-      const reportEl = document.createElement('div');
-      reportEl.className = 'pdf-report-document';
-      // Keep the capture element visible to html2canvas. The old implementation
-      // positioned it off-screen with z-index:-1, which could result in a blank PDF.
-      reportEl.style.position = 'absolute';
-      reportEl.style.left = '0';
-      reportEl.style.top = '0';
-      reportEl.style.zIndex = '99999';
-      reportEl.style.display = 'block';
-      reportEl.style.visibility = 'visible';
-      reportEl.style.opacity = '1';
-      reportEl.innerHTML = `
-        <div style="text-align:center; border-bottom:2px solid #d97706; padding-bottom:12px;">
-          <div style="font-size:28px;">🦚</div>
-          <h1 style="margin:4px 0 2px; font-size:22px; color:#78350f;">રાધાકૃષ્ણ જનહિતકારી ટ્રસ્ટ</h1>
-          <div style="font-size:15px; font-weight:700; color:#92400e;">સભ્ય ફાળો વિગત રિપોર્ટ</div>
-          <div style="font-size:10px; color:#64748b; margin-top:5px;">
-            સમયગાળો: ${selectedMonths} ${selectedMonths === 1 ? 'મહિનો' : 'મહિના'} |
-            ${escapeHtml(periodMonths[periodMonths.length - 1].label)} થી
-            ${escapeHtml(periodMonths[0].label)}
-          </div>
-          <div style="font-size:9px; color:#64748b; margin-top:2px;">
-            રિપોર્ટ જનરેટ: ${escapeHtml(reportGeneratedAt)} | રજિસ્ટ્રેશન નં.: E10308
-          </div>
-        </div>
-
-        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:14px;">
-          <div style="border:1px solid #cbd5e1; padding:8px; text-align:center; border-radius:6px;">
-            <div style="font-size:16px; font-weight:700; color:#92400e;">${members.length}</div>
-            <div style="font-size:9px; color:#64748b;">કુલ સભ્યો</div>
-          </div>
-          <div style="border:1px solid #cbd5e1; padding:8px; text-align:center; border-radius:6px;">
-            <div style="font-size:16px; font-weight:700; color:#166534;">${paidMemberCount}</div>
-            <div style="font-size:9px; color:#64748b;">ફાળો ભરેલ</div>
-          </div>
-          <div style="border:1px solid #cbd5e1; padding:8px; text-align:center; border-radius:6px;">
-            <div style="font-size:16px; font-weight:700; color:#b91c1c;">${unpaidMemberCount}</div>
-            <div style="font-size:9px; color:#64748b;">ફાળો બાકી</div>
-          </div>
-        </div>
-
-        <div class="pdf-report-section">
-          <h2 style="font-size:14px; color:#78350f; margin:0 0 7px;">સભ્ય ફાળો વિગત</h2>
-          <table>
-            <thead>
-              <tr>
-                <th style="width:8%;">#</th>
-                <th style="width:35%;">નામ</th>
-                <th style="width:20%;">તારીખ</th>
-                <th style="width:20%;">રકમ</th>
-                <th style="width:17%;">ચુકવણી</th>
-              </tr>
-            </thead>
-            <tbody>${memberRows}</tbody>
-          </table>
-        </div>
-
-        <div style="margin-top:16px; border:2px solid #d97706; background:#fffbeb; padding:12px 14px; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
-          <div style="font-size:14px; font-weight:700; color:#78350f;">💰 કુલ Fund</div>
-          <div style="font-size:18px; font-weight:800; color:#166534;">₹${totalFund.toLocaleString('en-IN')}</div>
-        </div>
-
-        <div style="border-top:1px solid #cbd5e1; margin-top:18px; padding-top:8px; font-size:9px; color:#64748b; text-align:center;">
-          ✨ આપના ફાળા બદલ ખૂબ ખૂબ આભાર ✨<br>
-          This is a Software Generated By Elitecode IT solution
-        </div>
-      `;
-
-      document.body.appendChild(reportEl);
-      pdfBtn.disabled = true;
       const originalBtnText = pdfBtn.textContent;
+      pdfBtn.disabled = true;
       pdfBtn.textContent = '⏳ PDF...';
 
-      const fileStamp = new Date().toISOString().slice(0, 10);
-      const fileName = `RKJT_Member_Report_${selectedMonths}M_${fileStamp}.pdf`;
-
-      const options = {
-        margin: [8, 8, 8, 8],
-        filename: fileName,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: '#ffffff',
-          letterRendering: true,
-          logging: false,
-          scrollX: 0,
-          scrollY: 0,
-          windowWidth: Math.max(document.documentElement.clientWidth, reportEl.scrollWidth)
-        },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['css', 'legacy'] }
-      };
-
       try {
-        // Let the browser finish layout/font calculation before html2canvas captures it.
-        if (document.fonts && document.fonts.ready) {
-          await document.fonts.ready;
+        const periodMonths = getReportPeriodMonths(selectedMonths);
+        const periodKeys = new Set(periodMonths.map(m => m.key));
+        const periodPayments = payments
+          .filter(p => periodKeys.has(p.month))
+          .sort((a, b) => String(b.paidDate || '').localeCompare(String(a.paidDate || '')));
+
+        const totalFund = periodPayments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+        const paidMemberIds = new Set(periodPayments.map(p => String(p.memberId || '')).filter(Boolean));
+        const paidMemberCount = members.filter(member =>
+          paidMemberIds.has(String(member._id || member.__backendId || ''))
+        ).length;
+        const unpaidMemberCount = members.length - paidMemberCount;
+        const reportGeneratedAt = new Date().toLocaleString('gu-IN');
+
+        // One summary row per member for the selected period.
+        // Date = latest payment date in the selected period.
+        // Amount = total amount paid by that member in the selected period.
+        // Status = paid if at least one payment exists in that period.
+        const rows = members.map((member, index) => {
+          const memberId = String(member._id || member.__backendId || '');
+          const memberPayments = periodPayments.filter(p => String(p.memberId || '') === memberId);
+          const amountPaid = memberPayments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+          const latestPayment = memberPayments[0];
+          return {
+            no: index + 1,
+            name: member.name || '-',
+            date: latestPayment ? formatReportDate(latestPayment.paidDate) : '-',
+            amount: amountPaid,
+            status: memberPayments.length ? '✅ ભરેલ' : '❌ બાકી'
+          };
+        });
+
+        const pdf = new JsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
+
+        // Canvas coordinates: 1240 x 1754 ≈ A4 at 150 DPI.
+        // It is intentionally a real-sized canvas; previous code mixed mm-style
+        // coordinates with a pixel-sized canvas, which could produce ineffective captures.
+        const W = 1240;
+        const H = 1754;
+        const M = 60;
+        const FONT = 'Nirmala UI, Noto Sans Gujarati, Arial, sans-serif';
+
+        const makeCanvas = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = W;
+          canvas.height = H;
+          const ctx = canvas.getContext('2d');
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, W, H);
+          return { canvas, ctx };
+        };
+
+        const setFont = (ctx, size, weight = 400) => {
+          ctx.font = `${weight} ${size}px ${FONT}`;
+        };
+
+        const text = (ctx, value, x, y, size, weight = 400, color = '#0f172a', align = 'left') => {
+          setFont(ctx, size, weight);
+          ctx.fillStyle = color;
+          ctx.textAlign = align;
+          ctx.fillText(String(value ?? ''), x, y);
+        };
+
+        const box = (ctx, x, y, w, h, r, fill, stroke = null, lineWidth = 1) => {
+          ctx.beginPath();
+          const rr = Math.min(r, w / 2, h / 2);
+          ctx.moveTo(x + rr, y);
+          ctx.arcTo(x + w, y, x + w, y + h, rr);
+          ctx.arcTo(x + w, y + h, x, y + h, rr);
+          ctx.arcTo(x, y + h, x, y, rr);
+          ctx.arcTo(x, y, x + w, y, rr);
+          ctx.closePath();
+          if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+          if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lineWidth; ctx.stroke(); }
+        };
+
+        const drawHeader = (ctx) => {
+          text(ctx, '🦚', W / 2, 46, 30, 400, '#92400e', 'center');
+          text(ctx, 'રાધાકૃષ્ણ જનહિતકારી ટ્રસ્ટ', W / 2, 92, 28, 700, '#78350f', 'center');
+          text(ctx, 'સભ્ય ફાળો વિગત રિપોર્ટ', W / 2, 128, 19, 700, '#92400e', 'center');
+          text(ctx,
+            `સમયગાળો: ${selectedMonths} ${selectedMonths === 1 ? 'મહિનો' : 'મહિના'} | ${periodMonths[periodMonths.length - 1].label} થી ${periodMonths[0].label}`,
+            W / 2, 158, 12, 400, '#64748b', 'center'
+          );
+          text(ctx, `રિપોર્ટ જનરેટ: ${reportGeneratedAt} | રજિસ્ટ્રેશન નં.: E10308`, W / 2, 181, 10, 400, '#64748b', 'center');
+          ctx.fillStyle = '#d97706';
+          ctx.fillRect(M, 205, W - (M * 2), 3);
+        };
+
+        const drawSummary = (ctx, y) => {
+          const gap = 18;
+          const boxW = (W - M * 2 - gap * 2) / 3;
+          const boxH = 86;
+          const items = [
+            [String(members.length), 'કુલ સભ્યો', '#92400e'],
+            [String(paidMemberCount), 'ફાળો ભરેલ', '#166534'],
+            [String(unpaidMemberCount), 'ફાળો બાકી', '#b91c1c']
+          ];
+          items.forEach((item, i) => {
+            const x = M + i * (boxW + gap);
+            box(ctx, x, y, boxW, boxH, 8, '#f8fafc', '#cbd5e1', 2);
+            text(ctx, item[0], x + boxW / 2, y + 31, 23, 700, item[2], 'center');
+            text(ctx, item[1], x + boxW / 2, y + 61, 12, 400, '#64748b', 'center');
+          });
+        };
+
+        const columns = [
+          { x: M, w: 70, align: 'center', title: '#' },
+          { x: M + 70, w: 390, align: 'left', title: 'નામ' },
+          { x: M + 460, w: 205, align: 'center', title: 'તારીખ' },
+          { x: M + 665, w: 185, align: 'center', title: 'રકમ' },
+          { x: M + 850, w: 270, align: 'center', title: 'ચુકવણી' }
+        ];
+        const tableW = W - M * 2;
+        const rowH = 54;
+        const headerH = 54;
+
+        const drawTableHeader = (ctx, y) => {
+          box(ctx, M, y, tableW, headerH, 8, '#fef3c7', '#d97706', 2);
+          columns.forEach(col => {
+            let x = col.x + col.w / 2;
+            if (col.align === 'left') x = col.x + 14;
+            text(ctx, col.title, x, y + headerH / 2, 12, 700, '#78350f', col.align);
+          });
+        };
+
+        const drawRow = (ctx, row, y, zebra) => {
+          ctx.fillStyle = zebra ? '#f8fafc' : '#ffffff';
+          ctx.fillRect(M, y, tableW, rowH);
+          ctx.strokeStyle = '#cbd5e1';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(M, y, tableW, rowH);
+          columns.slice(1).forEach(col => {
+            ctx.beginPath();
+            ctx.moveTo(col.x, y);
+            ctx.lineTo(col.x, y + rowH);
+            ctx.stroke();
+          });
+          text(ctx, row.no, columns[0].x + columns[0].w / 2, y + rowH / 2, 11, 400, '#334155', 'center');
+          text(ctx, row.name, columns[1].x + 14, y + rowH / 2, 11, 600, '#0f172a', 'left');
+          text(ctx, row.date, columns[2].x + columns[2].w / 2, y + rowH / 2, 10.5, 400, '#334155', 'center');
+          text(ctx, `₹${Number(row.amount || 0).toLocaleString('en-IN')}`, columns[3].x + columns[3].w / 2, y + rowH / 2, 10.5, 600, '#0f172a', 'center');
+          text(ctx, row.status, columns[4].x + columns[4].w / 2, y + rowH / 2, 10.5, 700, row.status.startsWith('✅') ? '#166534' : '#b91c1c', 'center');
+        };
+
+        const drawFooter = (ctx, pageNo, totalPages) => {
+          const y = H - 42;
+          ctx.strokeStyle = '#cbd5e1';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(M, y - 17);
+          ctx.lineTo(W - M, y - 17);
+          ctx.stroke();
+          text(ctx, '✨ આપના ફાળા બદલ ખૂબ ખૂબ આભાર ✨', W / 2, y, 10, 400, '#64748b', 'center');
+          text(ctx, `Page ${pageNo} / ${totalPages}`, W - M, y, 9, 400, '#94a3b8', 'right');
+        };
+
+        // Page capacities are chosen so the final page always has room for Total Fund.
+        const firstTableTop = 365;
+        const otherTableTop = 115;
+        const dataBottom = H - 135;
+        const firstCapacity = Math.max(1, Math.floor((dataBottom - (firstTableTop + headerH)) / rowH));
+        const regularCapacity = Math.max(1, Math.floor((dataBottom - (otherTableTop + headerH)) / rowH));
+        const finalCapacity = Math.max(1, Math.floor((H - 235 - (otherTableTop + headerH)) / rowH));
+
+        const chunks = [];
+        let remaining = [...rows];
+        if (remaining.length <= Math.min(firstCapacity, finalCapacity)) {
+          chunks.push(remaining);
+        } else {
+          chunks.push(remaining.splice(0, firstCapacity));
+          while (remaining.length > finalCapacity + regularCapacity) {
+            chunks.push(remaining.splice(0, regularCapacity));
+          }
+          if (remaining.length > finalCapacity) {
+            chunks.push(remaining.splice(0, remaining.length - finalCapacity));
+          }
+          if (remaining.length) chunks.push(remaining);
         }
-        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
-        await window.html2pdf()
-          .set(options)
-          .from(reportEl)
-          .save();
+        const totalPages = Math.max(1, chunks.length);
+        chunks.forEach((chunk, pageIndex) => {
+          if (pageIndex > 0) pdf.addPage();
+          const { canvas, ctx } = makeCanvas();
+          drawHeader(ctx);
+          if (pageIndex === 0) drawSummary(ctx, 230);
 
+          const tableTop = pageIndex === 0 ? firstTableTop : otherTableTop;
+          drawTableHeader(ctx, tableTop);
+          let y = tableTop + headerH;
+          chunk.forEach((row, rowIndex) => {
+            drawRow(ctx, row, y, rowIndex % 2 === 1);
+            y += rowH;
+          });
+
+          if (pageIndex === totalPages - 1) {
+            const totalY = Math.max(y + 20, H - 225);
+            box(ctx, M, totalY, tableW, 82, 10, '#fffbeb', '#d97706', 3);
+            text(ctx, '💰 કુલ Fund', M + 22, totalY + 41, 17, 700, '#78350f', 'left');
+            text(ctx, `₹${totalFund.toLocaleString('en-IN')}`, W - M - 22, totalY + 41, 23, 800, '#166534', 'right');
+          }
+
+          drawFooter(ctx, pageIndex + 1, totalPages);
+          pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+        });
+
+        const fileStamp = new Date().toISOString().slice(0, 10);
+        const fileName = `RKJT_Member_Report_${selectedMonths}M_${fileStamp}.pdf`;
+        pdf.save(fileName);
         showToast(`${selectedMonths} ${selectedMonths === 1 ? 'મહિનાનો' : 'મહિનાનો'} PDF તૈયાર થયો!`, 'success');
       } catch (error) {
         console.error('PDF generation failed:', error);
         showToast('PDF બનાવવામાં ભૂલ થઈ. ફરી પ્રયાસ કરો.', 'error');
       } finally {
-        reportEl.remove();
         pdfBtn.disabled = false;
         pdfBtn.textContent = originalBtnText;
       }
